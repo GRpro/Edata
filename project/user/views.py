@@ -70,16 +70,41 @@ def logout():
     return redirect(url_for('user.login'))
 
 
+def process(companyArg):
+    import csv
+    import os
+
+    companyArg = companyArg.lower().strip().replace("\"", "")
+    maxProb = -1
+    finalDepartment = None
+
+    with open('/home/grigoriy/PycharmProjects/Edata/project/training.csv', 'rb') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=',', quotechar='|', )
+        spamreader.next()
+        for row in spamreader:
+            company = row[1]
+            department = row[2]
+            prob = row[3]
+
+            company = company.lower().strip().replace("\"", "")
+
+            if company == companyArg and prob > maxProb:
+                maxProb = prob
+                finalDepartment = department
+
+        return finalDepartment.strip()
+
+
 @user_blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     searchCompanyForm = UniversityInformationForm(request.form)
 
     # form = ChangePasswordForm(request.form)
-    universities = []
+    university = "Unknown"
     if searchCompanyForm.validate_on_submit():
         print "find university by " + searchCompanyForm.company.data
-        universities = ["uni1", "uni2", "uni3", "uni4"]
+        university = process(searchCompanyForm.company.data)
 
 
     # if form.validate_on_submit():
@@ -94,5 +119,6 @@ def profile():
     #         return redirect(url_for('user.profile'))
     return render_template('user/profile.html',
                            searchCompanyForm=searchCompanyForm,
-                           universities=universities)
+                           universities=[university])
+
 
