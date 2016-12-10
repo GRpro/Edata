@@ -6,14 +6,14 @@
 #################
 
 from flask import render_template, Blueprint, url_for, \
-    redirect, flash, request
+    redirect, flash, request, app
 from flask.ext.login import login_user, logout_user, \
     login_required, current_user
 
 from project.models import User
 # from project.email import send_email
 from project import db, bcrypt
-from .forms import LoginForm, RegisterForm, ChangePasswordForm
+from .forms import LoginForm, RegisterForm, UniversityInformationForm
 
 
 ################
@@ -73,15 +73,26 @@ def logout():
 @user_blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    form = ChangePasswordForm(request.form)
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=current_user.email).first()
-        if user:
-            user.password = bcrypt.generate_password_hash(form.password.data)
-            db.session.commit()
-            flash('Password successfully changed.', 'success')
-            return redirect(url_for('user.profile'))
-        else:
-            flash('Password change was unsuccessful.', 'danger')
-            return redirect(url_for('user.profile'))
-    return render_template('user/profile.html', form=form)
+    searchCompanyForm = UniversityInformationForm(request.form)
+
+    # form = ChangePasswordForm(request.form)
+    universities = []
+    if searchCompanyForm.validate_on_submit():
+        print "find university by " + searchCompanyForm.company.data
+        universities = ["uni1", "uni2", "uni3", "uni4"]
+
+
+    # if form.validate_on_submit():
+    #     user = User.query.filter_by(email=current_user.email).first()
+    #     if user:
+    #         user.password = bcrypt.generate_password_hash(form.password.data)
+    #         db.session.commit()
+    #         flash('Password successfully changed.', 'success')
+    #         return redirect(url_for('user.profile'))
+    #     else:
+    #         flash('Password change was unsuccessful.', 'danger')
+    #         return redirect(url_for('user.profile'))
+    return render_template('user/profile.html',
+                           searchCompanyForm=searchCompanyForm,
+                           universities=universities)
+

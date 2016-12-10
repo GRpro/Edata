@@ -11,36 +11,29 @@
 
 <div class="container">
   <div class="raw">
-    <div class="col-md-8">
 
-    </div>
     <div class="col-md-4">
-      <h2>Change Password</h2>
+      <h2>Build your future</h2>
       <br>
-      <form class="form-reset" role="form" method="post" action="">
-        {{ form.csrf_token }}
+      <form class="form-reset" role="form"  method="post" action="" >
+        {{ searchCompanyForm.csrf_token }}
         <p>
-          {{ form.password(placeholder="password") }}
-          <span class="error">
-            {% if form.password.errors %}
-              {% for error in form.password.errors %}
-                {{ error }}
-              {% endfor %}
-            {% endif %}
-          </span>
+          {{ searchCompanyForm.company(placeholder="company") }}
         </p>
-        <p>
-        {{ form.confirm(placeholder="confirm") }}
-          <span class="error">
-            {% if form.confirm.errors %}
-              {% for error in form.confirm.errors %}
-                {{ error }}
-              {% endfor %}
-            {% endif %}
-          </span>
-        </p>
-        <button class="btn btn-success" type="submit">Update</button>
+        <button class="btn btn-success" type="submit" formaction="">Find company</button>
       </form>
+    </div>
+
+    <div class="col-md-8">
+      <div class="list-group">
+        {% for university in universities %}
+          <a href="#" class="list-group-item">
+            <h5 class="list-group-item-heading">{{ university }}</h5>
+            <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+          </a>
+
+        {% endfor %}
+      </div>
     </div>
   </div>
 </div>
