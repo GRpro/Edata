@@ -1,0 +1,10 @@
+/* custom styles */
+
+body {
+  padding-top: 70px;
+}
+
+#profile-content {
+    display:inline;
+    width:300px;
+}
