@@ -4,6 +4,7 @@
 #################
 #### imports ####
 #################
+from collections import OrderedDict
 
 from flask import render_template, Blueprint, url_for, \
     redirect, flash, request, app
@@ -72,27 +73,31 @@ def logout():
 
 def process(companyArg):
     import csv
-    import os
 
     companyArg = companyArg.lower().strip().replace("\"", "")
     maxProb = -1
-    finalDepartment = None
+
+    unMap = {}
 
     with open('/home/grigoriy/PycharmProjects/Edata/project/training.csv', 'rb') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|', )
         spamreader.next()
         for row in spamreader:
-            company = row[1]
-            department = row[2]
+            company = row[1].lower().strip().replace("\"", "")
+            department = row[2].lower().strip().replace("\"", "")
             prob = row[3]
 
-            company = company.lower().strip().replace("\"", "")
-
             if company == companyArg and prob > maxProb:
-                maxProb = prob
-                finalDepartment = department
+                unMap[department] = prob
 
-        return finalDepartment.strip()
+        resList = list()
+        cnt = 1
+        for key, value in sorted(unMap.iteritems(), key=lambda (k, v): (v, k), reverse=True):
+            if float(value) > 0:
+                print value
+                resList.append(str(cnt) + ".  " + key)
+                cnt += 1
+        return resList
 
 
 @user_blueprint.route('/profile', methods=['GET', 'POST'])
@@ -101,7 +106,7 @@ def profile():
     searchCompanyForm = UniversityInformationForm(request.form)
 
     # form = ChangePasswordForm(request.form)
-    university = "Unknown"
+    university = None
     if searchCompanyForm.validate_on_submit():
         print "find university by " + searchCompanyForm.company.data
         university = process(searchCompanyForm.company.data)
@@ -119,6 +124,6 @@ def profile():
     #         return redirect(url_for('user.profile'))
     return render_template('user/profile.html',
                            searchCompanyForm=searchCompanyForm,
-                           universities=[university])
+                           universities=university if university else [])
 
 
